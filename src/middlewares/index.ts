@@ -3,5 +3,5 @@ import { errorHandler } from './error';
 
 export default app => {
   app.use(router),
-  app.use(errorHandler)
-}
+  app.use(errorHandler);
+};

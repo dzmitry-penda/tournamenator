@@ -5,7 +5,7 @@ const testSchema = new mongoose.Schema({
   data: Number,
   message: {
     type: String,
-    default: "Hello there"
+    default: 'Hello there'
   }
 }, { versionKey: false });
 
