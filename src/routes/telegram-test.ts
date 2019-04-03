@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { getTest, postTest } from '../controllers/test';
+import { getTest, postTest } from '../controllers/telegram-test';
 
 const router = Router();
 
