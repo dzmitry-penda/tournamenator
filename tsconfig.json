@@ -4,13 +4,11 @@
     "module": "commonjs",
     "experimentalDecorators": true,
     "sourceMap": true,
+    "outDir": "dist",
     "lib": [ "es2015" ]
   },
-  "files": [
-    "./node_modules/@types/node/index.d.ts"
-  ],
   "include": [
-    "src/**/*.ts"
+    "**/*.ts"
   ],
   "exclude": [
     "node_modules"
