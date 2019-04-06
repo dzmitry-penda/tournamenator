@@ -39,7 +39,7 @@ const selectRating = async (chatId: number, data: string) => {
   }
 
   if (ratingId == null) {
-    return client.sendMessage(
+    client.sendMessage(
       chatId,
       'Something is wrong. Please type in existing rating board id or type "new" to create a new one',
       {
@@ -122,10 +122,11 @@ const effects = {
 
 const nextStep = {
   [CreateTournamentState.SelectingName]: CreateTournamentState.SelectingRatingMode,
-
+  [CreateTournamentState.SelectingRatingMode]: CreateTournamentState.Confirmation,
   // extended mode :)
   // [CreateTournamentState.SelectingName]: CreateTournamentState.SelectingType,
   // [CreateTournamentState.SelectingType]: CreateTournamentState.SelectingRatingMode
+  // [CreateTournamentState.SelectingRatingMode]: CreateTournamentState.Confirmation,
 }
 
 export const createTournament = async (chatId) => {
