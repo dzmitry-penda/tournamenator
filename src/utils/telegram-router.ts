@@ -14,7 +14,7 @@ export class TelegramRouter {
     for (const routeConfig of this.routes) {
       if (route.startsWith(routeConfig.route)) {
         const chatId = message.chat.id;
-        return routeConfig.callback(chatId);
+        return routeConfig.callback(chatId, message);
       }
     }
   }
