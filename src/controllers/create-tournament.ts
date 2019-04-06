@@ -22,8 +22,8 @@ const sendTypeRequest = async (chatId, data) => {
         force_reply: true,
         selective: true,
         inline_keyboard: [
-          { text: TournamentType[TournamentType.League], callback_data: TournamentType.League },
-          { text: TournamentType[TournamentType.Cup], callback_data: TournamentType.Cup },
+          [{ text: TournamentType[TournamentType.League], callback_data: TournamentType.League }],
+          [{ text: TournamentType[TournamentType.Cup], callback_data: TournamentType.Cup }],
         ]
       })
     }
@@ -82,7 +82,7 @@ export const continueTournament = async (chatId, reply, text) => {
   console.log('inside',reply)
   console.log('mid', chat
   && chat.lastMessageId === reply.message_id
-  && reply.from.id === process.env.TELEGRAM_API_TOKEN.split(':')[0],
+  && reply.from.id === +process.env.TELEGRAM_API_TOKEN.split(':')[0],
   chat.lastMessageId, reply.message_id, reply.from.id, process.env.TELEGRAM_API_TOKEN.split(':')[0])
   if (chat
     && chat.lastMessageId === reply.message_id
