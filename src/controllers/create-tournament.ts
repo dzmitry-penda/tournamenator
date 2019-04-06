@@ -21,9 +21,10 @@ const sendTypeRequest = async (chatId, data) => {
       reply_markup: JSON.stringify({
         force_reply: true,
         selective: true,
-        inline_keyboard: [
-          [{ text: TournamentType[TournamentType.League], callback_data: TournamentType.League }],
-          [{ text: TournamentType[TournamentType.Cup], callback_data: TournamentType.Cup }],
+        one_time_keyboard: true,
+        keyboard: [
+          [{ text: TournamentType[TournamentType.League] }],
+          [{ text: TournamentType[TournamentType.Cup] }],
         ]
       })
     }
@@ -41,7 +42,7 @@ const sendRatingRequest = async (chatId, data) => {
     {
       reply_markup: JSON.stringify({
         force_reply: true,
-        selective: true,
+        selective: true
       })
     }
   ).promise();
