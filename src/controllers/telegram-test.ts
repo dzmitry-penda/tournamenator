@@ -16,7 +16,12 @@ export const createTournament = (chatId) => {
     chatId,
     'Great! New tournament! That\'s what I do best! How do we name it?',
     {
-      reply_markup: JSON.stringify({ force_reply: true, keyboard: [['Over 18'],['Under 18']] })
+      reply_markup: JSON.stringify({
+        force_reply: true,
+        selective: true,
+        one_time_keyboard: true,
+        keyboard: [['Over 18'],['Under 18']]
+      })
     }
   ).promise();
 };
