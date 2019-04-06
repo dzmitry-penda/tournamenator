@@ -81,7 +81,7 @@ export const continueTournament = async (chatId, reply, text) => {
   console.log('mid',reply)
   if (chat
     && chat.lastMessageId === reply.message_id
-    && reply.from.username === process.env.TELEGRAM_API_TOKEN.split('.')[0]) {
+    && reply.from.id === process.env.TELEGRAM_API_TOKEN.split('.')[0]) {
     const message = await actions[chat.state](chatId, text);
 
     chat = activeChats.get(chatId);
