@@ -1,5 +1,5 @@
 export class TelegramRouter {
-  private routes: [{ route: string, callback: Function}]
+  private routes: { route: string, callback: Function}[] = [];
 
   public route(route: string, callback: Function): TelegramRouter {
     this.routes.push({route, callback});
