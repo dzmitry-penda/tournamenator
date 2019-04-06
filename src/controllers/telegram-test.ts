@@ -19,8 +19,8 @@ export const createTournament = (chatId) => {
       reply_markup: JSON.stringify({
         force_reply: true,
         selective: true,
-        one_time_keyboard: true,
-        keyboard: [['Over 18'],['Under 18']]
+        // one_time_keyboard: true,
+        // keyboard: [['Over 18'],['Under 18']]
       })
     }
   ).promise();
