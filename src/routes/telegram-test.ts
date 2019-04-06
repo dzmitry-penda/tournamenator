@@ -6,6 +6,7 @@ const router = Router();
 
 router
   .post('/', (req, res, next) => {
+    console.log(req.body)
     const chatId = req.body.message.chat.id;
     console.log(req.body.message)
     const text: string = req.body.message.text;
