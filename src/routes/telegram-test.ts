@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getHelp } from '../controllers/bot-api';
 import { createTournament, continueCreatingTournament } from '../controllers/create-tournament';
+import { TelegramRouter } from '../utils/telegram-router';
 
 
 const router = Router();
