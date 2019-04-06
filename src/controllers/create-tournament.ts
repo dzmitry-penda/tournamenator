@@ -6,13 +6,10 @@ import { TournamentType } from '../enums/tournament-type';
 
 const activeChats = new Map<Number, Chat>();
 
-const sendTypeRequest = async (chatId, data) => {
-  console.log('setting data')
+const sendTypeRequest = async (chatId: number, data: string) => {
   const chat = activeChats.get(chatId);
   chat.name = data;
   activeChats.set(chatId, chat);
-  console.log(' data set', activeChats.get(chatId))
-  console.log(' data set', activeChats.get(chatId))
 
   const message = await client.sendMessage(
     chatId,
@@ -35,9 +32,9 @@ const sendTypeRequest = async (chatId, data) => {
   activeChats.set(chatId, chat);
 }
 
-const sendRatingRequest = async (chatId, data) => {
+const sendRatingRequest = async (chatId: number, data: string) => {
   const chat = activeChats.get(chatId);
-  chat.type = data;
+  chat.type = TournamentType[data];
   activeChats.set(chatId, chat);
 
   const message = await client.sendMessage(
@@ -56,7 +53,7 @@ const sendRatingRequest = async (chatId, data) => {
   activeChats.set(chatId, chat);
 }
 
-const finishCreation = async (chatId, reply) => {
+const finishCreation = async (chatId: number, data: string) => {
   return client.sendMessage(chatId, 'Great! Tournament created!').promise();
 }
 
@@ -81,11 +78,8 @@ export const createTournament = async (chatId) => {
   activeChats.set(chatId, new Chat(message.result.message_id, CreateTournamentState.SelectingName));
 };
 
-export const continueTournament = async (chatId, reply, text) => {
+export const continueCreatingTournament = async (chatId, reply, text) => {
   let chat = activeChats.get(chatId);
-  console.log('chat',chat)
-  console.log('inside',reply)
-  console.log('mid', chat.lastMessageId, reply.message_id, reply.from.id, process.env.TELEGRAM_API_TOKEN.split(':')[0])
   if (chat
     && chat.lastMessageId === reply.message_id
     && reply.from.id === +process.env.TELEGRAM_API_TOKEN.split(':')[0]) {
