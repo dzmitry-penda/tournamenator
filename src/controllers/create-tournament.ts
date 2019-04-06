@@ -91,6 +91,7 @@ export const continueTournament = async (chatId, reply, text) => {
 
     const message = await actions[chat.state](chatId, text);
     console.log('after', activeChats.get(chatId))
+    console.log('after', message)
 
     chat = activeChats.get(chatId);
     chat.lastMessageId = reply.result.message_id;
