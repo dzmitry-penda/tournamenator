@@ -8,7 +8,7 @@ router
   .post('/', (req, res, next) => {
     const chatId = req.body.message.chat.id;
     console.log(req.body.message)
-    const text: string = req.body.text;
+    const text: string = req.body.message.text;
     if (text.startsWith('/help')){
       getHelp(chatId);
     }
