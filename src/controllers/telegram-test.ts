@@ -10,7 +10,11 @@ export const postTest = async(req, res, next) => {
     .sendMessage(req.body.message.chat.id, 'I am GROOT?')
     .promise()
     .then(function(){
+      client
+      .sendMessage(req.body.message.chat.id, 'I am GROOT!')
+    .then(function(){
       res.json({ ok: true });
     })
+  })
     .catch(next);
 };
