@@ -69,7 +69,7 @@ export const createTournament = async (chatId) => {
 
   console.log(message);
 
-  activeChats.set(chatId, new Chat(message.message_id, CreateTournamentState.SelectingName));
+  activeChats.set(chatId, new Chat(message.result.message_id, CreateTournamentState.SelectingName));
 };
 
 
@@ -78,13 +78,14 @@ export const continueTournament = async (chatId, reply, text) => {
   let chat = activeChats.get(chatId);
   console.log('chat',chat)
   console.log('inside',reply)
+  console.log('mid',reply)
   if (chat
     && chat.lastMessageId === reply.message_id
     && reply.from.username === process.env.TELEGRAM_API_TOKEN.split('.')[0]) {
     const message = await actions[chat.state](chatId, text);
 
     chat = activeChats.get(chatId);
-    chat.lastMessageId = reply.message_id;
+    chat.lastMessageId = reply.result.message_id;
     activeChats.set(chatId, chat);
 
     console.log(chat);
