@@ -7,9 +7,12 @@ import { TournamentType } from '../enums/tournament-type';
 const activeChats = new Map<Number, Chat>();
 
 const sendTypeRequest = async (chatId, data) => {
+  console.log('setting data')
   const chat = activeChats.get(chatId);
   chat.name = data;
   activeChats.set(chatId, chat);
+  console.log(' data set', activeChats.get(chatId))
+  console.log(' data set', activeChats.get(chatId))
 
   return client.sendMessage(
     chatId,
@@ -18,7 +21,6 @@ const sendTypeRequest = async (chatId, data) => {
       reply_markup: JSON.stringify({
         force_reply: true,
         selective: true,
-        one_time_keyboard: true,
         inline_keyboard: [
           { text: TournamentType[TournamentType.League], callback_data: TournamentType.League },
           { text: TournamentType[TournamentType.Cup], callback_data: TournamentType.Cup },
@@ -78,11 +80,12 @@ export const continueTournament = async (chatId, reply, text) => {
   let chat = activeChats.get(chatId);
   console.log('chat',chat)
   console.log('inside',reply)
-  console.log('mid',chat.lastMessageId, reply.message_id, reply.from.id, process.env.TELEGRAM_API_TOKEN.split('.')[0])
+  console.log('mid',chat.lastMessageId, reply.message_id, reply.from.id, process.env.TELEGRAM_API_TOKEN.split(':')[0])
   if (chat
     && chat.lastMessageId === reply.message_id
     && reply.from.id === process.env.TELEGRAM_API_TOKEN.split(':')[0]) {
     const message = await actions[chat.state](chatId, text);
+    console.log('after', activeChats.get(chatId))
 
     chat = activeChats.get(chatId);
     chat.lastMessageId = reply.result.message_id;
