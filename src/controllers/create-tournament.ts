@@ -7,10 +7,11 @@ import TournamentSchema from '../schemas/tournament.schema';
 
 const activeChats = new Map<Number, Chat>();
 
-const selectName = (chatId: number, data: string) => {
+const selectName = (chatId: number, name: string) => {
   const chat = activeChats.get(chatId);
-  chat.name = data;
+  chat.name = name;
   activeChats.set(chatId, chat);
+  return name;
 }
 
 const selectType = async (chatId: number, data: string) => {

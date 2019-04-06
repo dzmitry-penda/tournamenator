@@ -27,6 +27,8 @@ router
       }
     }
 
+    console.log(req.body);
+
     res.json({ ok: true });
 });
 
