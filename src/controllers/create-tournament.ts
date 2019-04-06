@@ -14,7 +14,7 @@ const sendTypeRequest = async (chatId, data) => {
   console.log(' data set', activeChats.get(chatId))
   console.log(' data set', activeChats.get(chatId))
 
-  return client.sendMessage(
+  const message = await client.sendMessage(
     chatId,
     'OK! Now select type',
     {
@@ -29,6 +29,10 @@ const sendTypeRequest = async (chatId, data) => {
       })
     }
   ).promise();
+
+  chat.lastMessageId = message.result.message_id;
+  chat.state = CreateTournamentState.SelectingType;
+  activeChats.set(chatId, chat);
 }
 
 const sendRatingRequest = async (chatId, data) => {
@@ -36,7 +40,7 @@ const sendRatingRequest = async (chatId, data) => {
   chat.type = data;
   activeChats.set(chatId, chat);
 
-  return client.sendMessage(
+  const message = await client.sendMessage(
     chatId,
     'Almost done! Now type in existing rating board id or type "new" to create a new one',
     {
@@ -46,6 +50,10 @@ const sendRatingRequest = async (chatId, data) => {
       })
     }
   ).promise();
+
+  chat.lastMessageId = message.result.message_id;
+  chat.state = CreateTournamentState.SelectingRatingMode;
+  activeChats.set(chatId, chat);
 }
 
 const finishCreation = async (chatId, reply) => {
@@ -75,30 +83,15 @@ export const createTournament = async (chatId) => {
   activeChats.set(chatId, new Chat(message.result.message_id, CreateTournamentState.SelectingName));
 };
 
-
-
 export const continueTournament = async (chatId, reply, text) => {
   let chat = activeChats.get(chatId);
   console.log('chat',chat)
   console.log('inside',reply)
-  console.log('mid', chat
-  && chat.lastMessageId === reply.message_id
-  && reply.from.id === +process.env.TELEGRAM_API_TOKEN.split(':')[0],
-  chat.lastMessageId, reply.message_id, reply.from.id, process.env.TELEGRAM_API_TOKEN.split(':')[0])
+  console.log('mid', chat.lastMessageId, reply.message_id, reply.from.id, process.env.TELEGRAM_API_TOKEN.split(':')[0])
   if (chat
     && chat.lastMessageId === reply.message_id
     && reply.from.id === +process.env.TELEGRAM_API_TOKEN.split(':')[0]) {
-    console.log('before', chat.state, text)
-
     const message = await actions[chat.state](chatId, text);
-    console.log('after', activeChats.get(chatId))
-    console.log('after', message)
-
-    chat = activeChats.get(chatId);
-    chat.lastMessageId = message.result.message_id;
-    activeChats.set(chatId, chat);
-
-    console.log(chat);
   }
 };
 
