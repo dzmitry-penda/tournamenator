@@ -47,7 +47,7 @@ const sendRatingRequest = async (chatId, data) => {
   ).promise();
 }
 
-const finishCreation = async (chatId, reply) => {7
+const finishCreation = async (chatId, reply) => {
   return client.sendMessage(chatId, 'Great! Tournament created!').promise();
 }
 
@@ -84,6 +84,8 @@ export const continueTournament = async (chatId, reply, text) => {
   if (chat
     && chat.lastMessageId === reply.message_id
     && reply.from.id === process.env.TELEGRAM_API_TOKEN.split(':')[0]) {
+    console.log('before', chat.state, text)
+
     const message = await actions[chat.state](chatId, text);
     console.log('after', activeChats.get(chatId))
 
