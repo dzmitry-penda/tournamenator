@@ -27,7 +27,7 @@ const selectRating = async (chatId: number, data: string) => {
   if (data.toLowerCase() === 'new') {
     const doc: any = await TournamentSchema.findOne({}).sort('-ratingId').exec();
     console.log('DOCUMENT', doc);
-    ratingId = doc && doc.ratingId;
+    ratingId = doc && doc.ratingId || 1;
     if (ratingId) {
       client.sendMessage(
         chatId,
