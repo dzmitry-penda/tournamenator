@@ -1,4 +1,4 @@
-class TelegramRouter {
+export class TelegramRouter {
   private routes: [{ route: string, callback: Function}]
 
   public route(route: string, callback: Function): TelegramRouter {
