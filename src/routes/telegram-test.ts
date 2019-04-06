@@ -8,6 +8,7 @@ const router = Router();
 router
   .post('/', (req, res, next) => {
     if (!req.body.message) {
+      res.json({ ok: true });
       return;
     }
     const chatId = req.body.message.chat.id;
@@ -21,7 +22,7 @@ router
       createTournament(chatId);
     }
     console.log('reply',req.body.message.reply_to_message)
-    if(req.body.message.reply_to_message) {
+    if (req.body.message.reply_to_message) {
       continueTournament(chatId, req.body.message.reply_to_message, text);
     }
 
