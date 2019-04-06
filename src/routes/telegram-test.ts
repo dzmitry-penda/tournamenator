@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getHelp } from '../controllers/bot-api';
-import { createTournament, continueCreatingTournament, createTournamentAllowedReplies } from '../controllers/create-tournament';
+import { createTournament, continueCreatingTournament } from '../controllers/create-tournament';
 
 
 const router = Router();
@@ -21,8 +21,8 @@ router
     if (text.startsWith('/create')){
       createTournament(chatId);
     }
-    console.log('reply',req.body.message.reply_to_message)
-    if (req.body.message.reply_to_message || createTournamentAllowedReplies.includes(req.body.message.text)) {
+
+    if (req.body.message.reply_to_message) {
       continueCreatingTournament(chatId, req.body.message.reply_to_message, text);
     }
 
