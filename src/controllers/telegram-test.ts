@@ -1,20 +1,22 @@
 import client from '../client';
 
-export const getTest = (req, res, next) => {
-  res.json({ message: 'hello world'});
+export const getHelp = (chatId) => {
+  client
+    .sendMessage(
+      chatId,
+      `Hi, I'm a tournamenator!
+      I support following commands:
+      1. /create - create new tournament
+      2. /help - view help`)
+    .promise()
 };
 
-export const postTest = async(req, res, next) => {
-  console.log('sending1', req)
-  client
-    .sendMessage(req.body.message.chat.id, 'I am GROOT?')
-    .promise()
-    .then(function(){
-      client
-      .sendMessage(req.body.message.chat.id, 'I am GROOT!')
-    .then(function(){
-      res.json({ ok: true });
-    })
-  })
-    .catch(next);
+export const createTournament = (chatId) => {
+  return client.sendMessage(
+    chatId,
+    'Great! New tournament! That\'s what I do best! How do we name it?',
+    {
+      reply_markup: JSON.stringify({ force_reply: true, keyboard: [['Over 18'],['Under 18']] })
+    }
+  ).promise();
 };
