@@ -120,8 +120,11 @@ const effects = {
 }
 
 const nextStep = {
-  [CreateTournamentState.SelectingName]: CreateTournamentState.SelectingType,
-  [CreateTournamentState.SelectingType]: CreateTournamentState.SelectingRatingMode
+  [CreateTournamentState.SelectingName]: CreateTournamentState.SelectingRatingMode,
+
+  // extended mode :)
+  // [CreateTournamentState.SelectingName]: CreateTournamentState.SelectingType,
+  // [CreateTournamentState.SelectingType]: CreateTournamentState.SelectingRatingMode
 }
 
 export const createTournament = async (chatId) => {

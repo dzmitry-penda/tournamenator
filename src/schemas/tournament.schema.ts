@@ -1,6 +1,6 @@
 import mongoose from '../context';
 import { TournamentType } from '../enums/tournament-type';
-import { TournamentState } from '../enums/tournament-type.1';
+import { TournamentState } from '../enums/tournament-state';
 
 
 const Schema = mongoose.Schema;
