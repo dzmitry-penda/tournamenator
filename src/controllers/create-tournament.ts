@@ -129,11 +129,12 @@ const nextStep = {
   // [CreateTournamentState.SelectingRatingMode]: CreateTournamentState.Confirmation,
 }
 
-export const createTournament = async (chatId) => {
-  const message = await client.sendMessage(
+export const createTournament = async (chatId, message) => {
+  const reply = await client.sendMessage(
     chatId,
     'Great! New tournament! That\'s what I do best! How do we name it?',
     {
+      reply_to_message_id: message.message_id,
       reply_markup: JSON.stringify({
         force_reply: true,
         selective: true
@@ -141,11 +142,14 @@ export const createTournament = async (chatId) => {
     }
   ).promise();
 
-  activeChats.set(chatId, new Chat(message.result.message_id, CreateTournamentState.SelectingName));
+  activeChats.set(chatId, new Chat(reply.result.message_id, CreateTournamentState.SelectingName));
 };
 
-export const continueCreatingTournament = async (chatId, replyTarget, text) => {
+export const continueCreatingTournament = async (text, message) => {
+  const chatId = message.chat.id;
+  const replyTarget = message.reply_to_message;
   let chat = activeChats.get(chatId);
+
   if (chat && chat.lastMessageId === replyTarget.message_id
     && replyTarget.from.id === +process.env.TELEGRAM_API_TOKEN.split(':')[0]) {
 
@@ -153,10 +157,10 @@ export const continueCreatingTournament = async (chatId, replyTarget, text) => {
     if (!isValid) return;
 
     const nextAction = nextStep[chat.state];
-    const message = await actions[nextAction](chatId);
+    const reply = await actions[nextAction](chatId);
 
     chat = activeChats.get(chatId);
-    chat.lastMessageId = message.result.message_id;
+    chat.lastMessageId = reply.result.message_id;
     chat.state = nextAction;
     activeChats.set(chatId, chat);
   }

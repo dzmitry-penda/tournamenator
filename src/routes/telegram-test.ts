@@ -20,9 +20,8 @@ router
 
       if (message.reply_to_message) {
         continueCreatingTournament(
-          message.chat.id,
-          message.reply_to_message,
-          message.text
+          message.text,
+          message
         );
       }
     }
