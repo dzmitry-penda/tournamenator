@@ -15,6 +15,7 @@ router
   .post('/', (req, res, next) => {
     const { message } = req.body;
     if (message) {
+      console.log(message);
       tgRouter.match(message.text, message);
 
       if (message.reply_to_message) {

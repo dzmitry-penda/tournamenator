@@ -108,9 +108,9 @@ const finishCreation = async (chatId: number) => {
 }
 
 const actions = {
-  [CreateTournamentState.SelectingName]: sendTypeRequest,
-  [CreateTournamentState.SelectingType]: sendRatingRequest,
-  [CreateTournamentState.SelectingRatingMode]: finishCreation
+  [CreateTournamentState.SelectingType]: sendTypeRequest,
+  [CreateTournamentState.SelectingRatingMode]: sendRatingRequest,
+  [CreateTournamentState.Confirmation]: finishCreation,
 }
 
 const effects = {
@@ -150,11 +150,12 @@ export const continueCreatingTournament = async (chatId, replyTarget, text) => {
     const isValid = await effects[chat.state](chatId, text);
     if (!isValid) return;
 
-    const message = await actions[chat.state](chatId);
+    const nextAction = nextStep[chat.state];
+    const message = await actions[nextAction](chatId);
 
     chat = activeChats.get(chatId);
     chat.lastMessageId = message.result.message_id;
-    chat.state = nextStep[chat.state];
+    chat.state = nextAction;
     activeChats.set(chatId, chat);
   }
 };

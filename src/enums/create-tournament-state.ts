@@ -1,5 +1,6 @@
 export const enum CreateTournamentState {
   SelectingName,
   SelectingType,
-  SelectingRatingMode
+  SelectingRatingMode,
+  Confirmation
 }
