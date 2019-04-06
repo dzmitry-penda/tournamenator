@@ -7,10 +7,12 @@ const router = Router();
 
 router
   .post('/', (req, res, next) => {
-    console.log(req.body)
+    if (!req.body.message) {
+      return;
+    }
     const chatId = req.body.message.chat.id;
-    console.log(req.body.message)
     const text: string = req.body.message.text;
+    console.log(req.body.message)
     if (text.startsWith('/help')){
       getHelp(chatId);
     }
@@ -18,9 +20,9 @@ router
     if (text.startsWith('/create')){
       createTournament(chatId);
     }
-
+    console.log('reply',req.body.message.reply_to_message)
     if(req.body.message.reply_to_message) {
-      continueTournament(chatId, req.body.message.reply_to_message);
+      continueTournament(chatId, req.body.message.reply_to_message, text);
     }
 
     res.json({ ok: true });

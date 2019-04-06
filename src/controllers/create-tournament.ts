@@ -6,9 +6,9 @@ import { TournamentType } from '../enums/tournament-type';
 
 const activeChats = new Map<Number, Chat>();
 
-const sendTypeRequest = async (chatId, reply) => {
+const sendTypeRequest = async (chatId, data) => {
   const chat = activeChats.get(chatId);
-  chat.name = reply.text;
+  chat.name = data;
   activeChats.set(chatId, chat);
 
   return client.sendMessage(
@@ -28,9 +28,9 @@ const sendTypeRequest = async (chatId, reply) => {
   ).promise();
 }
 
-const sendRatingRequest = async (chatId, reply) => {
+const sendRatingRequest = async (chatId, data) => {
   const chat = activeChats.get(chatId);
-  chat.type = reply.callback_data;
+  chat.type = data;
   activeChats.set(chatId, chat);
 
   return client.sendMessage(
@@ -74,13 +74,14 @@ export const createTournament = async (chatId) => {
 
 
 
-export const continueTournament = async (chatId, reply) => {
+export const continueTournament = async (chatId, reply, text) => {
   let chat = activeChats.get(chatId);
-
+  console.log('chat',chat)
+  console.log('inside',reply)
   if (chat
     && chat.lastMessageId === reply.message_id
     && reply.from.username === process.env.TELEGRAM_API_TOKEN.split('.')[0]) {
-    const message = await actions[chat.state](chatId, reply);
+    const message = await actions[chat.state](chatId, text);
 
     chat = activeChats.get(chatId);
     chat.lastMessageId = reply.message_id;
