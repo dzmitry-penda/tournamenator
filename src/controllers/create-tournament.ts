@@ -141,7 +141,7 @@ export const createTournament = async (chatId, message) => {
       })
     }
   ).promise();
-
+  console.log(reply);
   activeChats.set(chatId, new Chat(reply.result.message_id, CreateTournamentState.SelectingName));
 };
 
