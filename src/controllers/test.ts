@@ -1,4 +1,4 @@
-import testSchema from '../models/test.schema';
+import testSchema from '../schemas/test.schema';
 
 
 export const getTest = (req, res, next) => {

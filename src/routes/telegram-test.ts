@@ -1,6 +1,7 @@
 import { Router } from 'express';
+import { getHelp } from '../controllers/bot-api';
+import { createTournament, continueTournament } from '../controllers/create-tournament';
 
-import { getHelp, createTournament } from '../controllers/telegram-test';
 
 const router = Router();
 
@@ -17,6 +18,11 @@ router
     if (text.startsWith('/create')){
       createTournament(chatId);
     }
+
+    if(req.body.message.reply_to_message) {
+      continueTournament(chatId, req.body.message.reply_to_message);
+    }
+
     res.json({ ok: true });
 });
 
