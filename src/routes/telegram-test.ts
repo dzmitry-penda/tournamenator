@@ -4,26 +4,25 @@ import { createTournament, continueCreatingTournament } from '../controllers/cre
 
 
 const router = Router();
+const tgRouter = new TelegramRouter();
+
+tgRouter
+  .route('/help', getHelp)
+  .route('/create', createTournament);
 
 router
   .post('/', (req, res, next) => {
-    if (!req.body.message) {
-      res.json({ ok: true });
-      return;
-    }
-    const chatId = req.body.message.chat.id;
-    const text: string = req.body.message.text;
-    console.log(req.body.message)
-    if (text.startsWith('/help')){
-      getHelp(chatId);
-    }
+    const { message } = req.body;
+    if (message) {
+      tgRouter.match(message.text, message);
 
-    if (text.startsWith('/create')){
-      createTournament(chatId);
-    }
-
-    if (req.body.message.reply_to_message) {
-      continueCreatingTournament(chatId, req.body.message.reply_to_message, text);
+      if (message.reply_to_message) {
+        continueCreatingTournament(
+          message.chat.id,
+          message.reply_to_message,
+          message.text
+        );
+      }
     }
 
     res.json({ ok: true });
