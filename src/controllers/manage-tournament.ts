@@ -65,7 +65,7 @@ export const removeUserFromTournament = async(chatId, message) => {
       .filter(_ => _);
 
     const usersToRemove = [...textMentions, ...mentions];
-    console.log(usersToRemove);
+    console.log('ueueueue', textMentions, mentions, usersToRemove);
 
     return removeUsers(chatId, tournament, usersToRemove);
   }
