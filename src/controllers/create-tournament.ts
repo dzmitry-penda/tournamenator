@@ -3,7 +3,6 @@ import { Chat } from '../models/chat.model';
 import { CreateTournamentState } from '../enums/create-tournament-state';
 import { TournamentType } from '../enums/tournament-type';
 import TournamentSchema from '../schemas/tournament.schema';
-import tournamentSchema from '../schemas/tournament.schema';
 import { TournamentState } from '../enums/tournament-state';
 
 
@@ -12,7 +11,7 @@ const activeChats = new Map<Number, Chat>();
 const checkUserResponse = async(chatId: number, response: string) => {
   const chat = activeChats.get(chatId);
   if (response.toLowerCase().trim() === 'yes') {
-    const tournamentToClose = await tournamentSchema.findByIdAndUpdate(
+    const tournamentToClose = await TournamentSchema.findByIdAndUpdate(
       chat.tournamentIdToClose,
       {
         state: TournamentState.Closed
@@ -25,24 +24,27 @@ const checkUserResponse = async(chatId: number, response: string) => {
 
   activeChats.delete(chatId);
   client.sendMessage(chatId, `OK. Keeping as is`);
+
   return false;
-}
+};
 
 const selectName = (chatId: number, name: string) => {
   const chat = activeChats.get(chatId);
   chat.name = name;
   activeChats.set(chatId, chat);
-  return name;
-}
 
-const selectType = async (chatId: number, data: string) => {
+  return name;
+};
+
+const selectType = async(chatId: number, data: string) => {
   const chat = activeChats.get(chatId);
   chat.name = TournamentType[data];
   activeChats.set(chatId, chat);
-  return true;
-}
 
-const selectRating = async (chatId: number, data: string, message) => {
+  return true;
+};
+
+const selectRating = async(chatId: number, data: string, message) => {
   let ratingId;
   if (data.toLowerCase() === 'new') {
     const doc: any = await TournamentSchema.findOne({}).sort('-ratingId').exec();
@@ -53,7 +55,7 @@ const selectRating = async (chatId: number, data: string, message) => {
         `Your rating board id is ${ratingId}. Store it somewhere if you want to use it at any time later`,
       );
     }
-  } else if(!isNaN(+data)){
+  } else if (!isNaN(+data)) {
     ratingId = +data;
   }
 
@@ -73,14 +75,14 @@ const selectRating = async (chatId: number, data: string, message) => {
     ).promise();
     chat.lastMessageId = reply.result.message_id;
   } else {
-    chat.ratingId = ratingId
+    chat.ratingId = ratingId;
   }
   activeChats.set(chatId, chat);
 
   return ratingId != null;
-}
+};
 
-const sendNameRequest = async (chatId: number, message) => {
+const sendNameRequest = async(chatId: number, message) => {
   return client.sendMessage(
     chatId,
     'How do we name it? How about "My super cool tournament?"',
@@ -92,9 +94,9 @@ const sendNameRequest = async (chatId: number, message) => {
       })
     }
   ).promise();
-}
+};
 
-const sendTypeRequest = async (chatId: number, message) => {
+const sendTypeRequest = async(chatId: number, message) => {
   return client.sendMessage(
     chatId,
     'OK! Now select type',
@@ -111,9 +113,9 @@ const sendTypeRequest = async (chatId: number, message) => {
       })
     }
   ).promise();
-}
+};
 
-const sendRatingRequest = async (chatId: number, message) => {
+const sendRatingRequest = async(chatId: number, message) => {
   return client.sendMessage(
     chatId,
     'Almost done! Now type in existing rating board id or type "new" to create a new one',
@@ -125,9 +127,9 @@ const sendRatingRequest = async (chatId: number, message) => {
       })
     }
   ).promise();
-}
+};
 
-const finishCreation = async (chatId: number) => {
+const finishCreation = async(chatId: number) => {
   const chat = activeChats.get(chatId);
   TournamentSchema.create({
     name: chat.name,
@@ -136,25 +138,26 @@ const finishCreation = async (chatId: number) => {
   });
 
   activeChats.delete(chatId);
+
   return client.sendMessage(
     chatId,
     `Great! Tournament ${chat.name} was created! Players can now be added using /join and /add commands`
   ).promise();
-}
+};
 
 const actions = {
   [CreateTournamentState.SelectingName]: sendNameRequest,
   [CreateTournamentState.SelectingType]: sendTypeRequest,
   [CreateTournamentState.SelectingRatingMode]: sendRatingRequest,
   [CreateTournamentState.Confirmation]: finishCreation,
-}
+};
 
 const effects = {
   [CreateTournamentState.RecreatingTournament]: checkUserResponse,
   [CreateTournamentState.SelectingName]: selectName,
   [CreateTournamentState.SelectingType]: selectType,
   [CreateTournamentState.SelectingRatingMode]: selectRating
-}
+};
 
 const nextStep = {
   [CreateTournamentState.RecreatingTournament]: CreateTournamentState.SelectingName,
@@ -164,16 +167,17 @@ const nextStep = {
   // [CreateTournamentState.SelectingName]: CreateTournamentState.SelectingType,
   // [CreateTournamentState.SelectingType]: CreateTournamentState.SelectingRatingMode
   // [CreateTournamentState.SelectingRatingMode]: CreateTournamentState.Confirmation,
-}
+};
 
-export const createTournament = async (chatId, message) => {
-  const tournaments = await tournamentSchema.find({ 'chatId': chatId }) as any[];
+export const createTournament = async(chatId, message) => {
+  const tournaments = await TournamentSchema.find({ chatId }) as any[];
   const activeTournament = tournaments &&
-    tournaments.find(t => t.state == TournamentState.New || t.state === TournamentState.Started);
+    tournaments.find(t => t.state === TournamentState.New || t.state === TournamentState.Started);
   if (activeTournament) {
     const reply = await client.sendMessage(
       chatId,
-      `You have active tournament ${activeTournament.name} in this chat. Do you want to close it and create new? Type yes to create new and close opened one`,
+      // tslint:disable-next-line:max-line-length
+      `You have active tournament ${activeTournament.name} in this chat. Do you want to close it and create new? Type "yes" to create new and close opened one`,
       {
         reply_to_message_id: message.message_id,
         reply_markup: JSON.stringify({
@@ -186,25 +190,23 @@ export const createTournament = async (chatId, message) => {
       chatId,
       new Chat(reply.result.message_id, CreateTournamentState.RecreatingTournament, activeTournament._id)
     );
-
-    return;
+  } else {
+    const reply = await client.sendMessage(
+      chatId,
+      'Great! New tournament! That\'s what I do best! How do we name it?',
+      {
+        reply_to_message_id: message.message_id,
+        reply_markup: JSON.stringify({
+          force_reply: true,
+          selective: true
+        })
+      }
+    ).promise();
+    activeChats.set(chatId, new Chat(reply.result.message_id, CreateTournamentState.SelectingName));
   }
-
-  const reply = await client.sendMessage(
-    chatId,
-    'Great! New tournament! That\'s what I do best! How do we name it?',
-    {
-      reply_to_message_id: message.message_id,
-      reply_markup: JSON.stringify({
-        force_reply: true,
-        selective: true
-      })
-    }
-  ).promise();
-  activeChats.set(chatId, new Chat(reply.result.message_id, CreateTournamentState.SelectingName));
 };
 
-export const continueCreatingTournament = async (text, message) => {
+export const continueCreatingTournament = async(text, message) => {
   const chatId = message.chat.id;
   const replyTarget = message.reply_to_message;
   let chat = activeChats.get(chatId);
@@ -213,7 +215,10 @@ export const continueCreatingTournament = async (text, message) => {
     && replyTarget.from.id === +process.env.TELEGRAM_API_TOKEN.split(':')[0]) {
 
     const isValid = await effects[chat.state](chatId, text, message);
-    if (!isValid) return;
+
+    if (!isValid) {
+      return;
+    }
 
     const nextAction = nextStep[chat.state];
     const reply = await actions[nextAction](chatId, message);
