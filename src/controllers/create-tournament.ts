@@ -170,7 +170,7 @@ export const createTournament = async (chatId, message) => {
     ).promise();
     activeChats.set(
       chatId,
-      new Chat(reply.result.message_id, CreateTournamentState.SelectingName, activeTournament._id)
+      new Chat(reply.result.message_id, CreateTournamentState.RecreatingTournament, activeTournament._id)
     );
 
     return;
@@ -203,7 +203,7 @@ export const continueCreatingTournament = async (text, message) => {
     const isValid = await effects[chat.state](chatId, text, message);
     console.log('isvalud', isValid);
     if (!isValid) return;
-    console.log('isvalud', isValid);
+    console.log('valid');
 
     const nextAction = nextStep[chat.state];
     const reply = await actions[nextAction](chatId, message);
