@@ -21,7 +21,7 @@ const selectType = async (chatId: number, data: string) => {
   return true;
 }
 
-const selectRating = async (chatId: number, data: string) => {
+const selectRating = async (chatId: number, data: string, message) => {
   let ratingId;
 
   if (data.toLowerCase() === 'new') {
@@ -43,6 +43,7 @@ const selectRating = async (chatId: number, data: string) => {
       chatId,
       'Something is wrong. Please type in existing rating board id or type "new" to create a new one',
       {
+        reply_to_message_id: message.message_id,
         reply_markup: JSON.stringify({
           force_reply: true,
           selective: true
@@ -58,11 +59,12 @@ const selectRating = async (chatId: number, data: string) => {
   return ratingId != null;
 }
 
-const sendTypeRequest = async (chatId: number) => {
-  const message = await client.sendMessage(
+const sendTypeRequest = async (chatId: number, message) => {
+  return client.sendMessage(
     chatId,
     'OK! Now select type',
     {
+      reply_to_message_id: message.message_id,
       reply_markup: JSON.stringify({
         force_reply: true,
         selective: true,
@@ -74,18 +76,14 @@ const sendTypeRequest = async (chatId: number) => {
       })
     }
   ).promise();
-
-  const chat = activeChats.get(chatId);
-  chat.lastMessageId = message.result.message_id;
-  chat.state = CreateTournamentState.SelectingType;
-  activeChats.set(chatId, chat);
 }
 
-const sendRatingRequest = async (chatId: number) => {
+const sendRatingRequest = async (chatId: number, message) => {
   return client.sendMessage(
     chatId,
     'Almost done! Now type in existing rating board id or type "new" to create a new one',
     {
+      reply_to_message_id: message.message_id,
       reply_markup: JSON.stringify({
         force_reply: true,
         selective: true
@@ -104,7 +102,7 @@ const finishCreation = async (chatId: number) => {
 
   return client.sendMessage(
     chatId,
-    `Great! Tournament ${chat.name} created!`
+    `Great! Tournament ${chat.name} was created! Players can now be added using /join and /add commands`
   ).promise();
 }
 
@@ -153,11 +151,11 @@ export const continueCreatingTournament = async (text, message) => {
   if (chat && chat.lastMessageId === replyTarget.message_id
     && replyTarget.from.id === +process.env.TELEGRAM_API_TOKEN.split(':')[0]) {
 
-    const isValid = await effects[chat.state](chatId, text);
+    const isValid = await effects[chat.state](chatId, text, message);
     if (!isValid) return;
 
     const nextAction = nextStep[chat.state];
-    const reply = await actions[nextAction](chatId);
+    const reply = await actions[nextAction](chatId, message);
 
     chat = activeChats.get(chatId);
     chat.lastMessageId = reply.result.message_id;
