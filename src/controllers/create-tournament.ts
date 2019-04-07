@@ -41,7 +41,7 @@ const selectRating = async (chatId: number, data: string, message) => {
   console.log('ratingId', ratingId, message)
 
   if (ratingId == null) {
-    const reply = client.sendMessage(
+    const reply = await client.sendMessage(
       chatId,
       'Something is wrong. Please type in existing rating board id or type "new" to create a new one',
       {
