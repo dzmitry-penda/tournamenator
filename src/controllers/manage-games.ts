@@ -23,6 +23,7 @@ export const addGame = async(chatId, message) => {
     { chatId, state: TournamentState.Started },
   ) as any;
 
+  console.log('HERE!', message)
   const mentions = message.entities
     .filter((entity) => entity.type === 'text_mention' || entity.type === 'mention');
 
