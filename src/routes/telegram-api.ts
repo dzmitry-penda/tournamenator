@@ -10,6 +10,7 @@ import {
   removeCurrentUserFromTournament,
   removeUserFromTournament
 } from '../controllers/manage-tournament';
+import { addGame } from '../controllers/manage-games';
 
 
 const router = Router();
@@ -22,6 +23,8 @@ tgRouter
   .route('/join', addCurrentUserToTournament)
   .route('/leave', removeCurrentUserFromTournament)
   .route('/remove', removeUserFromTournament)
+
+  .route('/result', addGame)
 
   .route('/start', startTournament);
 
