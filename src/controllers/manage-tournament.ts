@@ -55,11 +55,11 @@ export const removeUserFromTournament = async(chatId, message) => {
   if (tournament) {
     console.log(tournament);
     const textMentions = message.entities
-      .filter((entity) => entity.type = 'text_mention')
+      .filter((entity) => entity.type === 'text_mention')
       .map(m => m.user);
 
     const mentions = message.entities
-      .filter((entity) => entity.type = 'mention')
+      .filter((entity) => entity.type === 'mention')
       .map(m => message.text.substr(m.offset + 1, m.length - 1))
       .map(username => tournament.users.find(user => user.username === username))
       .filter(_ => _);
