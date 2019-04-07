@@ -46,6 +46,13 @@ async function removeUser(chatId, tournament, userInfo) {
 }
 
 async function removeUsers(chatId, tournament, users) {
+  if (!users.length) {
+    return client.sendMessage(
+      chatId,
+      `No listed users can be removed`
+    ).promise();
+  }
+
   return Promise.all(users.map((user) => removeUser(chatId, tournament, user)));
 }
 
@@ -65,7 +72,6 @@ export const removeUserFromTournament = async(chatId, message) => {
       .filter(_ => _);
 
     const usersToRemove = [...textMentions, ...mentions];
-    console.log('ueueueue', textMentions, mentions, usersToRemove);
 
     return removeUsers(chatId, tournament, usersToRemove);
   }
