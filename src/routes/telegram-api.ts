@@ -4,7 +4,13 @@ import { TelegramRouter } from '../utils/telegram-router';
 
 import { getHelp } from '../controllers/bot-api';
 import { createTournament, continueCreatingTournament } from '../controllers/create-tournament';
-import { addUserToTournament, addCurrentUserToTournament, startTournament } from '../controllers/manage-tournament';
+import {
+  addUserToTournament,
+  addCurrentUserToTournament,
+  startTournament,
+  removeCurrentUserFromTournament,
+  removeUserFromTournament
+} from '../controllers/manage-tournament';
 
 
 const router = Router();
@@ -13,8 +19,12 @@ const tgRouter = new TelegramRouter();
 tgRouter
   .route('/help', getHelp)
   .route('/create', createTournament)
-  .route('/join', addCurrentUserToTournament)
+
   .route('/add', addUserToTournament)
+  .route('/join', addCurrentUserToTournament)
+  .route('/leave', removeCurrentUserFromTournament)
+  .route('/remove', removeUserFromTournament)
+
   .route('/start', startTournament);
 
 router
