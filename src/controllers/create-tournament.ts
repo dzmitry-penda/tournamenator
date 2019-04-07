@@ -37,9 +37,9 @@ const selectRating = async (chatId: number, data: string, message) => {
   } else if(!isNaN(+data)){
     ratingId = +data;
   }
-
+  const chat = activeChats.get(chatId);
   if (ratingId == null) {
-    client.sendMessage(
+    const reply = client.sendMessage(
       chatId,
       'Something is wrong. Please type in existing rating board id or type "new" to create a new one',
       {
@@ -50,11 +50,11 @@ const selectRating = async (chatId: number, data: string, message) => {
         })
       }
     ).promise();
+    chat.lastMessageId = reply.result.message_id;
   } else {
-    const chat = activeChats.get(chatId);
     chat.ratingId = ratingId
-    activeChats.set(chatId, chat);
   }
+  activeChats.set(chatId, chat);
 
   return ratingId != null;
 }
