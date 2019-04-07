@@ -50,6 +50,7 @@ const selectRating = async (chatId: number, data: string, message) => {
         })
       }
     ).promise();
+    console.log('MID',reply.result.message_id);
     chat.lastMessageId = reply.result.message_id;
   } else {
     chat.ratingId = ratingId
@@ -148,6 +149,8 @@ export const continueCreatingTournament = async (text, message) => {
   const replyTarget = message.reply_to_message;
   let chat = activeChats.get(chatId);
 
+  console.log('continue', chat ,chat.lastMessageId , replyTarget.message_id
+  && replyTarget.from.id)
   if (chat && chat.lastMessageId === replyTarget.message_id
     && replyTarget.from.id === +process.env.TELEGRAM_API_TOKEN.split(':')[0]) {
 
