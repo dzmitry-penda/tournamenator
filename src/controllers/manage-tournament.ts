@@ -60,7 +60,6 @@ export const removeUserFromTournament = async(chatId, message) => {
   const tournament = await TournamentSchema.findOne({ chatId, state: TournamentState.New }) as any;
 
   if (tournament) {
-    console.log(tournament);
     const textMentions = message.entities
       .filter((entity) => entity.type === 'text_mention')
       .map(m => m.user);
