@@ -11,8 +11,10 @@ const activeChats = new Map<Number, Chat>();
 
 const checkUserResponse = async(chatId: number, response: string) => {
   const chat = activeChats.get(chatId);
-
+  console.log(response)
   if (response.toLowerCase().trim() === 'yes') {
+ console.log('close tournament')
+
     const tournamentToClose = await tournamentSchema.findByIdAndUpdate(
       chat.tournamentIdToClose,
       {
@@ -21,7 +23,7 @@ const checkUserResponse = async(chatId: number, response: string) => {
     );
     return true;
   }
-
+ console.log('keep as is')
   activeChats.delete(chatId);
   client.sendMessage(chatId, `OK. Keeping as is`);
   return false;
@@ -157,7 +159,7 @@ export const createTournament = async (chatId, message) => {
   if (activeTournament) {
     const reply = await client.sendMessage(
       chatId,
-      `You have active tournament ${activeTournament} in this chat. Do you want to close it and create new? Type yes to create new and close opened one`,
+      `You have active tournament ${activeTournament.name} in this chat. Do you want to close it and create new? Type yes to create new and close opened one`,
       {
         reply_to_message_id: message.message_id,
         reply_markup: JSON.stringify({
