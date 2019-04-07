@@ -23,7 +23,7 @@ const selectType = async (chatId: number, data: string) => {
 
 const selectRating = async (chatId: number, data: string, message) => {
   let ratingId;
-
+  console.log('entered selecting rating')
   if (data.toLowerCase() === 'new') {
     const doc: any = await TournamentSchema.findOne({}).sort('-ratingId').exec();
     console.log('DOCUMENT', doc);
@@ -38,6 +38,8 @@ const selectRating = async (chatId: number, data: string, message) => {
     ratingId = +data;
   }
   const chat = activeChats.get(chatId);
+  console.log('ratingId', ratingId, message)
+
   if (ratingId == null) {
     const reply = client.sendMessage(
       chatId,
