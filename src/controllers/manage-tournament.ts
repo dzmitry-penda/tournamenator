@@ -7,7 +7,7 @@ import { TournamentState } from '../enums/tournament-state';
 
 
 async function addToTournament(chatId, tournament, userInfo) {
-  if (tournament.users.contains(userInfo.id)) {
+  if (tournament.users.find(user => user === userInfo.id)) {
     return client.sendMessage(
       chatId,
       `User ${userInfo.first_name || userInfo.username} is already added to the tournament`
@@ -30,7 +30,7 @@ export const addUserToTournament = async(chatId, message) => {
     console.log(tournament);
     const mention = message.entities.find((entity) => entity.type = 'text_mention');
 
-    console.log(mention)
+    console.log(mention);
     if (mention && mention.user) {
 
      // return addUserToTournament(chatId, tournament, user);
