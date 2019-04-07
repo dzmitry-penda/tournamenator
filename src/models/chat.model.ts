@@ -8,6 +8,7 @@ export class Chat {
 
   constructor(
     public lastMessageId: number,
-    public state: CreateTournamentState
+    public state: CreateTournamentState,
+    public tournamentIdToClose?: number,
   ) { }
 }

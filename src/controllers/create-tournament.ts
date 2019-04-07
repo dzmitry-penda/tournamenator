@@ -3,9 +3,29 @@ import { Chat } from '../models/chat.model';
 import { CreateTournamentState } from '../enums/create-tournament-state';
 import { TournamentType } from '../enums/tournament-type';
 import TournamentSchema from '../schemas/tournament.schema';
+import tournamentSchema from '../schemas/tournament.schema';
+import { TournamentState } from '../enums/tournament-state';
 
 
 const activeChats = new Map<Number, Chat>();
+
+const checkUserResponse = async(chatId: number, response: string) => {
+  const chat = activeChats.get(chatId);
+
+  if (response.toLowerCase().trim() === 'yes') {
+    const tournamentToClose = await tournamentSchema.findByIdAndUpdate(
+      chat.tournamentIdToClose,
+      {
+        state: TournamentState.Closed
+      }
+    );
+    return true;
+  }
+
+  activeChats.delete(chatId);
+  client.sendMessage(chatId, `OK. Keeping as is`);
+  return false;
+}
 
 const selectName = (chatId: number, name: string) => {
   const chat = activeChats.get(chatId);
@@ -23,10 +43,8 @@ const selectType = async (chatId: number, data: string) => {
 
 const selectRating = async (chatId: number, data: string, message) => {
   let ratingId;
-  console.log('entered selecting rating')
   if (data.toLowerCase() === 'new') {
     const doc: any = await TournamentSchema.findOne({}).sort('-ratingId').exec();
-    console.log('DOCUMENT', doc);
     ratingId = doc && doc.ratingId || 1;
     if (ratingId) {
       client.sendMessage(
@@ -37,8 +55,8 @@ const selectRating = async (chatId: number, data: string, message) => {
   } else if(!isNaN(+data)){
     ratingId = +data;
   }
+
   const chat = activeChats.get(chatId);
-  console.log('ratingId', ratingId, message)
 
   if (ratingId == null) {
     const reply = await client.sendMessage(
@@ -52,7 +70,6 @@ const selectRating = async (chatId: number, data: string, message) => {
         })
       }
     ).promise();
-    console.log('MID',reply.result.message_id);
     chat.lastMessageId = reply.result.message_id;
   } else {
     chat.ratingId = ratingId
@@ -103,6 +120,7 @@ const finishCreation = async (chatId: number) => {
     chatId: chatId
   });
 
+  activeChats.delete(chatId);
   return client.sendMessage(
     chatId,
     `Great! Tournament ${chat.name} was created! Players can now be added using /join and /add commands`
@@ -116,12 +134,14 @@ const actions = {
 }
 
 const effects = {
+  [CreateTournamentState.RecreatingTournament]: checkUserResponse,
   [CreateTournamentState.SelectingName]: selectName,
   [CreateTournamentState.SelectingType]: selectType,
   [CreateTournamentState.SelectingRatingMode]: selectRating
 }
 
 const nextStep = {
+  [CreateTournamentState.RecreatingTournament]: CreateTournamentState.SelectingName,
   [CreateTournamentState.SelectingName]: CreateTournamentState.SelectingRatingMode,
   [CreateTournamentState.SelectingRatingMode]: CreateTournamentState.Confirmation,
   // extended mode :)
@@ -131,6 +151,29 @@ const nextStep = {
 }
 
 export const createTournament = async (chatId, message) => {
+  const tournaments = await tournamentSchema.find({ 'chatId': chatId }) as any[];
+  const activeTournament = tournaments &&
+    tournaments.find(t => t.state == TournamentState.New || t.state === TournamentState.Started);
+  if (activeTournament) {
+    const reply = await client.sendMessage(
+      chatId,
+      `You have active tournament ${activeTournament} in this chat. Do you want to close it and create new? Type yes to create new and close opened one`,
+      {
+        reply_to_message_id: message.message_id,
+        reply_markup: JSON.stringify({
+          force_reply: true,
+          selective: true
+        })
+      }
+    ).promise();
+    activeChats.set(
+      chatId,
+      new Chat(reply.result.message_id, CreateTournamentState.SelectingName, activeTournament._id)
+    );
+
+    return;
+  }
+
   const reply = await client.sendMessage(
     chatId,
     'Great! New tournament! That\'s what I do best! How do we name it?',
@@ -142,7 +185,6 @@ export const createTournament = async (chatId, message) => {
       })
     }
   ).promise();
-  console.log(reply);
   activeChats.set(chatId, new Chat(reply.result.message_id, CreateTournamentState.SelectingName));
 };
 
