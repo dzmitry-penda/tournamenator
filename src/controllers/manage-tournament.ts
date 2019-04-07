@@ -30,8 +30,8 @@ async function addToTournament(chatId, tournament, userInfo) {
 
 async function removeUser(chatId, tournament, userInfo) {
   if (tournament.users.find(user => user.id === userInfo.id)) {
-    tournament.users = tournament.users.filter(user => user.id !== userInfo.id);
-    await tournament.save();
+    const users = tournament.users.filter(user => user.id !== userInfo.id);
+    await TournamentSchema.findByIdAndUpdate(tournament.id, { users });
 
     return client.sendMessage(
       chatId,
@@ -53,7 +53,7 @@ async function removeUsers(chatId, tournament, users) {
     ).promise();
   }
 
-  return Promise.all(users.map((user) => removeUser(chatId, tournament, user)));
+  return Promise.all(users.map(async(user) => await removeUser(chatId, tournament, user)));
 }
 
 export const removeUserFromTournament = async(chatId, message) => {
