@@ -46,7 +46,7 @@ async function removeUser(chatId, tournament, userInfo) {
 }
 
 async function removeUsers(chatId, tournament, users) {
-  return Promise.all(users.map(removeUser(chatId, tournament, users)));
+  return Promise.all(users.map((user) => removeUser(chatId, tournament, user)));
 }
 
 export const removeUserFromTournament = async(chatId, message) => {
