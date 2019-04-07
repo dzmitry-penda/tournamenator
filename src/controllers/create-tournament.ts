@@ -201,7 +201,9 @@ export const continueCreatingTournament = async (text, message) => {
     && replyTarget.from.id === +process.env.TELEGRAM_API_TOKEN.split(':')[0]) {
 
     const isValid = await effects[chat.state](chatId, text, message);
+    console.log('isvalud', isValid);
     if (!isValid) return;
+    console.log('isvalud', isValid);
 
     const nextAction = nextStep[chat.state];
     const reply = await actions[nextAction](chatId, message);
