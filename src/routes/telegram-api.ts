@@ -5,7 +5,6 @@ import { TelegramRouter } from '../utils/telegram-router';
 import { getHelp } from '../controllers/bot-api';
 import { createTournament, continueCreatingTournament } from '../controllers/create-tournament';
 import {
-  addUserToTournament,
   addCurrentUserToTournament,
   startTournament,
   removeCurrentUserFromTournament,
@@ -20,7 +19,6 @@ tgRouter
   .route('/help', getHelp)
   .route('/create', createTournament)
 
-  .route('/add', addUserToTournament)
   .route('/join', addCurrentUserToTournament)
   .route('/leave', removeCurrentUserFromTournament)
   .route('/remove', removeUserFromTournament)

@@ -7,13 +7,18 @@ import { TournamentState } from '../enums/tournament-state';
 
 
 async function addToTournament(chatId, tournament, userInfo) {
-  if (tournament.users.find(user => user === userInfo.id)) {
+  if (tournament.users.find(user => user.id === userInfo.id)) {
     return client.sendMessage(
       chatId,
       `User ${userInfo.first_name || userInfo.username} is already added to the tournament`
     ).promise();
   } else {
-    tournament.users.push(userInfo.id);
+    tournament.users.push({
+      id: userInfo.id,
+      username: userInfo.username,
+      first_name: userInfo.first_name,
+      last_name: userInfo.last_name,
+    });
     await tournament.save();
 
     return client.sendMessage(
@@ -23,7 +28,7 @@ async function addToTournament(chatId, tournament, userInfo) {
   }
 }
 
-async function removeFromTournament(chatId, tournament, userInfo) {
+async function removeUser(chatId, tournament, userInfo) {
   if (tournament.users.find(user => user === userInfo.id)) {
     tournament.users = tournament.users.filter(id => id !== userInfo.id);
     await tournament.save();
@@ -40,17 +45,28 @@ async function removeFromTournament(chatId, tournament, userInfo) {
   }
 }
 
+async function removeUsers(chatId, tournament, users) {
+  return Promise.all(users.map(removeUser(chatId, tournament, users)));
+}
+
 export const removeUserFromTournament = async(chatId, message) => {
   const tournament = await TournamentSchema.findOne({ chatId, state: TournamentState.New }) as any;
 
   if (tournament) {
     console.log(tournament);
-    const mention = message.entities.find((entity) => entity.type = 'text_mention');
+    const textMentions = message.entities
+      .filter((entity) => entity.type = 'text_mention')
+      .map(m => m.user);
 
-    console.log(mention, mention.user);
-    if (mention && mention.user) {
-     return removeFromTournament(chatId, tournament, mention.user);
-    }
+    const mentions = message.entities
+      .filter((entity) => entity.type = 'mention')
+      .map(m => message.text.substr(m.offset + 1, m.length - 1))
+      .map(username => tournament.users.find(user => user.username === username))
+      .filter(_ => _);
+
+    const usersToRemove = [...textMentions, ...mentions].map(user => user.id);
+
+    return removeUsers(chatId, tournament, usersToRemove);
   }
 };
 
@@ -58,21 +74,7 @@ export const removeCurrentUserFromTournament = async(chatId, message) => {
   const tournament = await TournamentSchema.findOne({ chatId, state: TournamentState.New }) as any;
 
   if (tournament) {
-    return removeFromTournament(chatId, tournament, message.from);
-  }
-};
-
-export const addUserToTournament = async(chatId, message) => {
-  const tournament = await TournamentSchema.findOne({ chatId, state: TournamentState.New }) as any;
-
-  if (tournament) {
-    console.log(tournament);
-    const mention = message.entities.find((entity) => entity.type = 'text_mention');
-
-    console.log(mention, mention.user);
-    if (mention && mention.user) {
-     return addToTournament(chatId, tournament, mention.user);
-    }
+    return removeUser(chatId, tournament, message.from);
   }
 };
 
