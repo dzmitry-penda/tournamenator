@@ -30,14 +30,10 @@ export const addUserToTournament = async(chatId, message) => {
     console.log(tournament);
     const mention = message.entities.find((entity) => entity.type = 'text_mention');
 
-    console.log(mention);
+    console.log(mention, mention.user);
     if (mention && mention.user) {
-
-     // return addUserToTournament(chatId, tournament, user);
-
+     return addToTournament(chatId, tournament, mention.user);
     }
-    // tournament.users.push(message.entities.id);
-    // tournament.save();
   }
 };
 
