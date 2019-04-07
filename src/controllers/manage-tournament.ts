@@ -93,7 +93,7 @@ export const addCurrentUserToTournament = async(chatId, message) => {
 };
 
 export const startTournament = async(chatId, message) => {
-  const tournament = await TournamentSchema.findOneAndUpdate(
+  const tournament = await TournamentSchema.findOne(
     { chatId, state: TournamentState.New },
     { state: TournamentState.Started }
   ) as any;

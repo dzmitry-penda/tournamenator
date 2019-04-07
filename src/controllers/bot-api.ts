@@ -9,8 +9,5 @@ export const getHelp = (chatId) => {
       I support following commands:
       1. /create - create new tournament
       2. /help - view help`)
-    .promise()
+    .promise();
 };
-
-
-
