@@ -31,7 +31,7 @@ router
   .post('/', (req, res, next) => {
     const { message } = req.body;
     if (message) {
-      console.log(message);
+      console.log('message', message);
       tgRouter.match(message.text, message);
 
       if (message.reply_to_message) {
@@ -42,7 +42,7 @@ router
       }
     }
 
-    console.log(req.body);
+    console.log('body', req.body);
 
     res.json({ ok: true });
 });
