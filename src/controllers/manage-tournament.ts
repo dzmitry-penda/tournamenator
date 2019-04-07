@@ -29,8 +29,8 @@ async function addToTournament(chatId, tournament, userInfo) {
 }
 
 async function removeUser(chatId, tournament, userInfo) {
-  if (tournament.users.find(user => user === userInfo.id)) {
-    tournament.users = tournament.users.filter(id => id !== userInfo.id);
+  if (tournament.users.find(user => user.id === userInfo.id)) {
+    tournament.users = tournament.users.filter(user => user.id !== userInfo.id);
     await tournament.save();
 
     return client.sendMessage(
