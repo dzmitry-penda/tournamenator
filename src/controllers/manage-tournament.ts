@@ -64,7 +64,7 @@ export const removeUserFromTournament = async(chatId, message) => {
       .map(username => tournament.users.find(user => user.username === username))
       .filter(_ => _);
 
-    const usersToRemove = [...textMentions, ...mentions].map(user => user.id);
+    const usersToRemove = [...textMentions, ...mentions];
 
     return removeUsers(chatId, tournament, usersToRemove);
   }
