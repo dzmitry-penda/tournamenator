@@ -21,6 +21,8 @@ const checkUserResponse = async(chatId: number, response: string) => {
         state: TournamentState.Closed
       }
     );
+    client.sendMessage(chatId, `Tournament closed. Now let's create a new one!`);
+
     return true;
   }
  console.log('keep as is')
@@ -81,6 +83,20 @@ const selectRating = async (chatId: number, data: string, message) => {
   return ratingId != null;
 }
 
+const sendNameRequest = async (chatId: number, message) => {
+  return client.sendMessage(
+    chatId,
+    'How do we name it? How about "My super cool tournament?"',
+    {
+      reply_to_message_id: message.message_id,
+      reply_markup: JSON.stringify({
+        force_reply: true,
+        selective: true
+      })
+    }
+  ).promise();
+}
+
 const sendTypeRequest = async (chatId: number, message) => {
   return client.sendMessage(
     chatId,
@@ -130,6 +146,7 @@ const finishCreation = async (chatId: number) => {
 }
 
 const actions = {
+  [CreateTournamentState.SelectingName]: sendNameRequest,
   [CreateTournamentState.SelectingType]: sendTypeRequest,
   [CreateTournamentState.SelectingRatingMode]: sendRatingRequest,
   [CreateTournamentState.Confirmation]: finishCreation,
