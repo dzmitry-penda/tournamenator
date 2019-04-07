@@ -11,10 +11,7 @@ const activeChats = new Map<Number, Chat>();
 
 const checkUserResponse = async(chatId: number, response: string) => {
   const chat = activeChats.get(chatId);
-  console.log(response)
   if (response.toLowerCase().trim() === 'yes') {
- console.log('close tournament')
-
     const tournamentToClose = await tournamentSchema.findByIdAndUpdate(
       chat.tournamentIdToClose,
       {
@@ -25,7 +22,7 @@ const checkUserResponse = async(chatId: number, response: string) => {
 
     return true;
   }
- console.log('keep as is')
+
   activeChats.delete(chatId);
   client.sendMessage(chatId, `OK. Keeping as is`);
   return false;
@@ -53,7 +50,7 @@ const selectRating = async (chatId: number, data: string, message) => {
     if (ratingId) {
       client.sendMessage(
         chatId,
-        `Your rating board id is ${ratingId}. Store it somethere if you want to use it some time later`,
+        `Your rating board id is ${ratingId}. Store it somewhere if you want to use it at any time later`,
       );
     }
   } else if(!isNaN(+data)){
@@ -212,15 +209,11 @@ export const continueCreatingTournament = async (text, message) => {
   const replyTarget = message.reply_to_message;
   let chat = activeChats.get(chatId);
 
-  console.log('continue', chat ,chat.lastMessageId , replyTarget.message_id
-  && replyTarget.from.id)
   if (chat && chat.lastMessageId === replyTarget.message_id
     && replyTarget.from.id === +process.env.TELEGRAM_API_TOKEN.split(':')[0]) {
 
     const isValid = await effects[chat.state](chatId, text, message);
-    console.log('isvalud', isValid);
     if (!isValid) return;
-    console.log('valid');
 
     const nextAction = nextStep[chat.state];
     const reply = await actions[nextAction](chatId, message);
