@@ -51,7 +51,8 @@ export const addGame = async(chatId, message) => {
       scoreUser1,
       scoreUser2,
       userId1: user1.id,
-      userId2: user2.id
+      userId2: user2.id,
+      tournament: tournament._id
     })]
   });
 

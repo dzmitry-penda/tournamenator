@@ -127,7 +127,7 @@ export const startTournament = async(chatId, message) => {
 export const displayResults = async(chatId, message) => {
   const tournament = await TournamentSchema.findOne(
     { chatId, state: TournamentState.Started },
-  ) as any;
+  ).populate('games') as any;
 
   const games = tournament.games.map(game => formatGame(tournament, game)).join('\r\n');
 
