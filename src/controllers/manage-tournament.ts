@@ -1,9 +1,7 @@
 import client from '../client';
-import { Chat } from '../models/chat.model';
-import { CreateTournamentState } from '../enums/create-tournament-state';
-import { TournamentType } from '../enums/tournament-type';
 import TournamentSchema from '../schemas/tournament.schema';
 import { TournamentState } from '../enums/tournament-state';
+import GameSchema from '../schemas/game.schema';
 
 
 async function addToTournament(chatId, tournament, userInfo) {
@@ -127,13 +125,15 @@ export const startTournament = async(chatId, message) => {
 export const displayResults = async(chatId, message) => {
   const tournament = await TournamentSchema.findOne(
     { chatId, state: TournamentState.Started },
-  ).populate('games') as any;
+  ) as any;
 
-  const games = tournament.games.map(game => formatGame(tournament, game)).join('\r\n');
+  const games = await GameSchema.find({tournament: tournament._id}) as any[];
+
+  const gamesInfo = games.map(game => formatGame(tournament, game)).join('\r\n');
 
   return client.sendMessage(
     chatId,
-    `Games:\r\n${games}`,
+    `Games:\r\n${gamesInfo}`,
     {
       parse_mode: 'Markdown'
     }
