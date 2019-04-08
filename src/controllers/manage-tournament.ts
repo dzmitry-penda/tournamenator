@@ -61,15 +61,18 @@ function formatGame(tournament, game) {
   const firstUser = tournament.users.find(u => u.id === game.userId1);
   const secondUser = tournament.users.find(u => u.id === game.userId2);
 
-  let firstUserName = `[${firstUser.first_name || firstUser.username}](tg://user?id=${game.userId1})`;
+  let firstUserName = firstUser.first_name || firstUser.username;
   if (isFirstUserWinner) {
     firstUserName = `*${firstUserName}*`;
   }
+  firstUserName = `[${firstUserName}](tg://user?id=${game.userId1})`;
 
-  let secondUserName = `[${secondUser.first_name || secondUser.username}](tg://user?id=${game.userId2})`;
+  let secondUserName = secondUser.first_name || secondUser.username;
   if (isSecondUserWinner) {
     secondUserName = `*${secondUserName}*`;
   }
+  secondUserName = `[${secondUserName}](tg://user?id=${game.userId2})`;
+
 
   return `${firstUserName} ${game.scoreUser1}:${game.scoreUser2} ${secondUserName}`;
 }
@@ -139,4 +142,3 @@ export const displayResults = async(chatId, message) => {
     }
   ).promise();
 };
-
