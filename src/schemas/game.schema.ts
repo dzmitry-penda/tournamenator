@@ -7,6 +7,7 @@ const GameSchema = new Schema({
   userId2: Number,
   scoreUser1: Number,
   scoreUser2: Number,
+  tournament: { type: Schema.Types.ObjectId, ref: 'tournament' },
 }, { versionKey: false });
 
 
