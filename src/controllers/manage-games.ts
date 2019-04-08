@@ -34,9 +34,17 @@ export const addGame = async(chatId, message) => {
     );
   }
   const [user1, user2] = mentions.map(m => getUser(tournament, m, message.text));
-  const start = mentions[0].offset + mentions.length,
+  const start = mentions[0].offset + mentions[0].length,
     finish = mentions[1].offset;
   const score = message.text.substr(start, finish - start).trim();
+
+  if (!score) {
+    return client.sendMessage(
+      chatId,
+      `Probably you forgot to write the scrore`
+    ).promise();
+  }
+
   const [ scoreUser1, scoreUser2 ] = score.split(':');
   tournament.update({
     games: [...tournament.games, gameSchema.create({

@@ -8,7 +8,8 @@ import {
   addCurrentUserToTournament,
   startTournament,
   removeCurrentUserFromTournament,
-  removeUserFromTournament
+  removeUserFromTournament,
+  displayResults
 } from '../controllers/manage-tournament';
 import { addGame } from '../controllers/manage-games';
 
@@ -25,6 +26,7 @@ tgRouter
   .route('/remove', removeUserFromTournament)
 
   .route('/result', addGame)
+  .route('/show-results', displayResults)
 
   .route('/start', startTournament);
 

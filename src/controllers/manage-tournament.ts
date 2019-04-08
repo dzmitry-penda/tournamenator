@@ -56,6 +56,26 @@ async function removeUsers(chatId, tournament, users) {
   return Promise.all(users.map(async(user) => await removeUser(chatId, tournament, user)));
 }
 
+function formatGame(tournament, game) {
+  const isFirstUserWinner = game.scoreUser1 > game.scoreUser2;
+  const isSecondUserWinner = game.scoreUser2 > game.scoreUser1;
+
+  const firstUser = tournament.users.find(u => u.id === game.userId1);
+  const secondUser = tournament.users.find(u => u.id === game.userId2);
+
+  let firstUserName = `[${firstUser.first_name || firstUser.username}](tg://user?id=${game.userId1})`;
+  if (isFirstUserWinner) {
+    firstUserName = `*${firstUserName}*`;
+  }
+
+  let secondUserName = `[${secondUser.first_name || secondUser.username}](tg://user?id=${game.userId2})`;
+  if (isSecondUserWinner) {
+    secondUserName = `*${secondUserName}*`;
+  }
+
+  return `${firstUserName} ${game.scoreUser1}:${game.scoreUser2} ${secondUserName}`;
+}
+
 export const removeUserFromTournament = async(chatId, message) => {
   const tournament = await TournamentSchema.findOne({ chatId, state: TournamentState.New }) as any;
 
@@ -93,7 +113,7 @@ export const addCurrentUserToTournament = async(chatId, message) => {
 };
 
 export const startTournament = async(chatId, message) => {
-  const tournament = await TournamentSchema.findOne(
+  const tournament = await TournamentSchema.findOneAndUpdate(
     { chatId, state: TournamentState.New },
     { state: TournamentState.Started }
   ) as any;
@@ -101,6 +121,22 @@ export const startTournament = async(chatId, message) => {
   return client.sendMessage(
     chatId,
     `Yes! Tournament ${tournament.name} has started!`
+  ).promise();
+};
+
+export const displayResults = async(chatId, message) => {
+  const tournament = await TournamentSchema.findOne(
+    { chatId, state: TournamentState.Started },
+  ) as any;
+
+  const games = tournament.games.map(game => formatGame(tournament, game)).join('\r\n');
+
+  return client.sendMessage(
+    chatId,
+    `Games:\r\n${games}`,
+    {
+      parse_mode: 'Markdown'
+    }
   ).promise();
 };
 
