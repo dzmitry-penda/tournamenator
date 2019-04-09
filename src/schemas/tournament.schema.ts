@@ -10,6 +10,13 @@ const TournamentSchema = new Schema({
   type: { type: Number, default: TournamentType.League },
   ratingId: Number,
   chatId: Number,
+  users: [{
+    id: Number,
+    username: String,
+    first_name: String,
+    last_name: String,
+  }],
+  games: [{ type: Schema.Types.ObjectId, ref: 'game'}],
   state: { type: Number, default: TournamentState.New },
 }, { versionKey: false });
 

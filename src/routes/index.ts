@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import testRouter from './test';
-import telegramRouter from './telegram-test';
+import telegramRouter from './telegram-api';
 
 const router = Router();
 console.log(`/${process.env.WEBHOOK_TOKEN}`);
