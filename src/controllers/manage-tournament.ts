@@ -68,12 +68,16 @@ function formatGame(tournament, game) {
   const firstUser = tournament.users.find(u => u.id === game.userId1);
   const secondUser = tournament.users.find(u => u.id === game.userId2);
 
-  let firstUserName = (firstUser.first_name || '') + (firstUser.last_name || '') || firstUser.username;
+  let firstUserName =
+    (firstUser.first_name || '') + (firstUser.last_name ? ` ${firstUser.last_name}` : '')
+    || firstUser.username;
   if (isFirstUserWinner) {
     firstUserName = `*${firstUserName}*`;
   }
 
-  let secondUserName = (secondUser.first_name || '') + (firstUser.last_name || '') || secondUser.username;
+  let secondUserName =
+    (secondUser.first_name || '') + (secondUser.last_name ? ` ${secondUser.last_name}` : '')
+    || secondUser.username;
   if (isSecondUserWinner) {
     secondUserName = `*${secondUserName}*`;
   }
