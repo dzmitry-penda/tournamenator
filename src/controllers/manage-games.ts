@@ -5,6 +5,7 @@ import { TournamentType } from '../enums/tournament-type';
 import TournamentSchema from '../schemas/tournament.schema';
 import { TournamentState } from '../enums/tournament-state';
 import gameSchema from '../schemas/game.schema';
+import { showNoActiveTournamentError } from './manage-tournament';
 
 const getUser = (tournament, mention, text) => {
   if (mention.type === 'text_mention') {
@@ -23,7 +24,10 @@ export const addGame = async(chatId, message) => {
     { chatId, state: TournamentState.Started },
   ) as any;
 
-  console.log('HERE!', message)
+  if (!tournament) {
+    showNoActiveTournamentError(chatId);
+  }
+
   const mentions = message.entities
     .filter((entity) => entity.type === 'text_mention' || entity.type === 'mention');
 

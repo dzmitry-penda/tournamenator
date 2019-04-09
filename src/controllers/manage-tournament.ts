@@ -54,6 +54,13 @@ async function removeUsers(chatId, tournament, users) {
   return Promise.all(users.map(async(user) => await removeUser(chatId, tournament, user)));
 }
 
+export function showNoActiveTournamentError(chatId) {
+  return client.sendMessage(
+    chatId,
+    `Hmm... there is no active tournament. Refer to /help to get more info about the available commands`
+  ).promise();
+}
+
 function formatGame(tournament, game) {
   const isFirstUserWinner = game.scoreUser1 > game.scoreUser2;
   const isSecondUserWinner = game.scoreUser2 > game.scoreUser1;
@@ -61,17 +68,15 @@ function formatGame(tournament, game) {
   const firstUser = tournament.users.find(u => u.id === game.userId1);
   const secondUser = tournament.users.find(u => u.id === game.userId2);
 
-  let firstUserName = firstUser.first_name || firstUser.username;
+  let firstUserName = (firstUser.first_name || '') + (firstUser.last_name || '') || firstUser.username;
   if (isFirstUserWinner) {
     firstUserName = `*${firstUserName}*`;
   }
-  firstUserName = `[${firstUserName}](tg://user?id=${game.userId1})`;
 
-  let secondUserName = secondUser.first_name || secondUser.username;
+  let secondUserName = (secondUser.first_name || '') + (firstUser.last_name || '') || secondUser.username;
   if (isSecondUserWinner) {
     secondUserName = `*${secondUserName}*`;
   }
-  secondUserName = `[${secondUserName}](tg://user?id=${game.userId2})`;
 
 
   return `${firstUserName} ${game.scoreUser1}:${game.scoreUser2} ${secondUserName}`;
@@ -114,10 +119,18 @@ export const addCurrentUserToTournament = async(chatId, message) => {
 };
 
 export const startTournament = async(chatId, message) => {
-  const tournament = await TournamentSchema.findOneAndUpdate(
+  const tournament = await TournamentSchema.findOne(
     { chatId, state: TournamentState.New },
-    { state: TournamentState.Started }
   ) as any;
+
+  if (!tournament) {
+    return client.sendMessage(
+      chatId,
+      `Hmm... there is no tournaments to start. Refer to help to see the available commands`
+    ).promise();
+  }
+
+  await tournament.update({ state: TournamentState.Started });
 
   return client.sendMessage(
     chatId,
@@ -125,10 +138,32 @@ export const startTournament = async(chatId, message) => {
   ).promise();
 };
 
+
+export const finishTournament = async(chatId, message) => {
+  const tournament = await TournamentSchema.findOne(
+    { chatId, state: TournamentState.Started },
+  ) as any;
+
+  if (!tournament) {
+    return showNoActiveTournamentError(chatId);
+  }
+
+  await tournament.update({ state: TournamentState.Finished });
+
+  return client.sendMessage(
+    chatId,
+    `Tournament ${tournament.name} finished!`
+  ).promise();
+};
+
 export const displayResults = async(chatId, message) => {
   const tournament = await TournamentSchema.findOne(
     { chatId, state: TournamentState.Started },
   ) as any;
+
+  if (!tournament) {
+    return showNoActiveTournamentError(chatId);
+  }
 
   const games = await GameSchema.find({tournament: tournament._id}) as any[];
 

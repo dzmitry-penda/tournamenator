@@ -7,6 +7,7 @@ import { createTournament, continueCreatingTournament } from '../controllers/cre
 import {
   addCurrentUserToTournament,
   startTournament,
+  finishTournament,
   removeCurrentUserFromTournament,
   removeUserFromTournament,
   displayResults
@@ -28,7 +29,8 @@ tgRouter
   .route('/result', addGame)
   .route('/show-results', displayResults)
 
-  .route('/start', startTournament);
+  .route('/start', startTournament)
+  .route('/finist', finishTournament);
 
 router
   .post('/', (req, res, next) => {
