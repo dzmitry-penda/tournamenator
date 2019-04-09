@@ -30,7 +30,7 @@ tgRouter
   .route('/show-results', displayResults)
 
   .route('/start', startTournament)
-  .route('/finist', finishTournament);
+  .route('/finish', finishTournament);
 
 router
   .post('/', (req, res, next) => {
